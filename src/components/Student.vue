@@ -18,14 +18,35 @@
             <div v-for="module in modules" :key="module.name" class="overview-section">
               <h3 class="overview-title">{{ module.name }}</h3>
               <div v-if="module.content" class="overview-content">
-                {{ module.content }}
+                <div v-if="module.name === '总览'" id="overview">
+                  <div id="Notice">
+                    <h3>公告</h3>
+                    {{ notice[notice.length-1] }}
+                  </div>
+                  <div class="Information">
+                    <h3>个人信息</h3>
+                    姓名:{{ studentName }}<br>
+                    学号:{{ studentId }}
+                  </div>
+                  <div class="Information">
+                    <h3>活动任务</h3>
+                    剩余:{{ remainRequestNum }}
+                  </div>
+                </div>
               </div>
               <div v-else class="empty-message">
                 暂无内容
               </div>
             </div>
           </div>
-  
+          <div v-else-if="currentModule.name === '公告'">
+            <div class="Information" v-for="(item, index) in notice" :key="index">
+              {{ notice[notice.length-index-1] }}
+            </div>
+          </div>
+          <div v-else-if="currentModule.name === '活动任务'">
+            test
+          </div>
           <!-- 原有的模块内容 -->
           <div v-else>
             <h2>{{ currentModule.name }}</h2>
@@ -56,6 +77,15 @@
         modules: [
           {
             name: '总览',
+            content: '1',
+            history: []
+          },
+          {
+            name: '公告',
+            content: ''
+          },
+          {
+            name: '活动任务',
             content: '',
             history: []
           },
@@ -89,6 +119,7 @@
       this.currentModule = this.modules[0];
       // 从服务器加载数据
       this.loadContent();
+      this.getStudentData();
     },
     methods: {
       formatDate(timestamp) {
@@ -146,6 +177,12 @@
           alert('加载失败：' + error.message);
           console.error('加载失败：', error);
         }
+      },
+      getStudentData() {
+        this.studentName = '姓名'
+        this.studentId = '学号'
+        this.remainRequestNum = 1
+        this.notice = ['公告1\n1\n1\n1\n1\n1\n1','公告2','公告3\n1']
       }
     }
   };
@@ -258,5 +295,34 @@
     color: #666;
     font-style: italic;
   }
+  
+  .Information {
+    width: 200px;
+    height: 200px;
+    box-shadow: 0px 0px 0px #ccc;
+    border-radius: 10px;
+    border: 3px solid #00afee;
+    padding: 10px;
+    line-height: 2;
+    margin: 5px;
+  }
+
+  #overview {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  #Notice {
+    width: 100%;
+    height: 200px;
+    box-shadow: 0px 0px 0px #ccc;
+    border-radius: 10px;
+    border: 3px solid #00afee;
+    padding: 10px;
+    line-height: 2;
+    margin: 5px;
+    white-space: wrap;
+  }
+
   </style>
   
