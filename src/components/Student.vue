@@ -1,54 +1,63 @@
 <template>
-    <div class="container">
-      <!-- 侧边导航栏 -->
-      <div class="sidebar">
-        <div class="nav-item" 
-             v-for="(item, index) in modules" 
-             :key="index"
-             @click="currentModule = item">
-          {{ item.name }}
-        </div>
+  <div class="container">
+    <div class="sidebar">
+      <div class="nav-item" 
+        v-for="(item, index) in modules" 
+        :key="index"
+        @click="currentModule = item">
+        {{ item.name }}
       </div>
-  
-      <!-- 主要内容区域 -->
+    </div>
       <div class="content">
         <div class="module" v-if="currentModule">
-          <!-- 总览模块 -->
           <div v-if="currentModule.name === '总览'" class="module">
             <div v-for="module in modules" :key="module.name" class="overview-section">
               <h3 class="overview-title">{{ module.name }}</h3>
               <div v-if="module.content" class="overview-content">
-                {{ module.content }}
-              </div>
-              <div v-else class="empty-message">
-                暂无内容
+                <div v-if="module.name === '总览'" id="overview">
+                  <div class="NewNotice">
+                    <h3>最新公告</h3>
+                    <h4 style="text-align: center;">{{ notice.title[notice.title.length-1] }}</h4>
+                    <p style="text-align: center;">时间：{{ formatDate(notice.time[notice.time.length-1]) }} 发起人：{{ notice.user[notice.user.length-1] }}</p>
+                    <p v-for="line in Lines(notice.content.length-1)">{{ line }}</p>
+                  </div>
+                  <div class="Information">
+                    <h3>个人信息</h3>
+                    姓名:{{ studentName }}<br>
+                    学号:{{ studentId }}<br>
+                    班级:{{ studentClass }}
+                  </div>
+                  <div class="Information">
+                    <h3>活动任务</h3>
+                    剩余:{{ remainRequestNum }}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-  
-          <!-- 原有的模块内容 -->
+          <div v-else-if="currentModule.name === '公告'">
+            <div class="Notice" v-for="(item, index) in notice.title":key="index">
+              <h3 style="text-align: center;">{{ notice.title[notice.title.length-index-1] }}</h3>
+              <p style="text-align: center;">时间：{{ formatDate(notice.time[notice.time.length-index-1]) }} 发起人：{{ notice.user[notice.user.length-index-1] }}</p>
+              <p v-for="line in Lines(notice.title.length-index-1)">{{ line }}</p>
+            </div>
+          </div>
+          <div v-else-if="currentModule.name === '活动任务'">
+            test
+          </div>
           <div v-else>
             <h2>{{ currentModule.name }}</h2>
             <textarea v-model="currentModule.content" 
                       placeholder="请在这里输入内容..."></textarea>
             <button @click="saveContent">保存</button>
-  
-            <div class="history-list" v-if="currentModule.history && currentModule.history.length">
-              <h3>历史记录</h3>
-              <div class="history-item" v-for="(item, index) in sortedHistory" :key="index">
-                <div class="history-meta">
-                  #{{index + 1}} - 提交时间：{{ formatDate(item.timestamp) }}
-                </div>
-                <div>{{ item.content }}</div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
-  </template>
+  </div>
+</template>
   
-  <script>
+<script>
+  import dayjs from 'dayjs';
   export default {
     data() {
       return {
@@ -56,6 +65,15 @@
         modules: [
           {
             name: '总览',
+            content: '1',
+            history: []
+          },
+          {
+            name: '公告',
+            content: ''
+          },
+          {
+            name: '活动任务',
             content: '',
             history: []
           },
@@ -89,6 +107,7 @@
       this.currentModule = this.modules[0];
       // 从服务器加载数据
       this.loadContent();
+      this.getStudentData();
     },
     methods: {
       formatDate(timestamp) {
@@ -96,7 +115,6 @@
       },
       async saveContent() {
         try {
-          // 添加历史记录
           if (!this.currentModule.history) {
             this.currentModule.history = [];
           }
@@ -127,7 +145,7 @@
         }
       },
       async loadContent() {
-        try {
+        /*try {
           // 从服务器获取数据
           const response = await fetch('/api/student/modules', {
             method: 'GET',
@@ -145,7 +163,26 @@
         } catch (error) {
           alert('加载失败：' + error.message);
           console.error('加载失败：', error);
+        }*/
+      },
+      getStudentData() {
+        console.log()
+        this.studentName = '姓名'
+        this.studentId = '学号'
+        this.studentClass = '班级'
+        this.remainRequestNum = 1
+        this.notice = {
+          title: ['公告1','公告2','公告3'],
+          content: ['这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条\n这里没有滚动条','测试','滚动条测试\n滚动条测试\n滚动条测试\n滚动条测试\n滚动条测试\n滚动条测试\n滚动条测试\n滚动条测试\n滚动条测试\n滚动条测试\n滚动条测试\n滚动条测试\n滚动条测试\n滚动条测试\n滚动条测试\n滚动条测试\n滚动条测试'],
+          time: ['2024-09-01T00:00:00+08:00','2024-10-01T00:00:00+08:00','2024-11-01T00:00:00+08:00'],
+          user: ['admin1','admin2','admin3']
         }
+      },
+      Lines(i) {
+        return this.notice.content[i].split('\n')
+      },
+      formatDate(date) {
+        return dayjs(date).format('YYYY年MM月DD日 HH:mm:ss')
       }
     }
   };
@@ -258,5 +295,46 @@
     color: #666;
     font-style: italic;
   }
+  
+  .Information {
+    width: 200px;
+    height: 200px;
+    box-shadow: 0px 0px 0px #ccc;
+    border-radius: 10px;
+    border: 3px solid #00afee;
+    padding: 10px;
+    line-height: 2;
+    margin: 5px;
+  }
+
+  #overview {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .NewNotice {
+    width: 100%;
+    height: 400px;
+    box-shadow: 0px 0px 0px #ccc;
+    border-radius: 10px;
+    border: 3px solid #00afee;
+    padding: 10px;
+    line-height: 2;
+    margin: 5px;
+    white-space: wrap;
+    overflow: auto;
+  }
+  .Notice {
+    width: 100%;
+    box-shadow: 0px 0px 0px #ccc;
+    border-radius: 10px;
+    border: 3px solid #00afee;
+    padding: 10px;
+    line-height: 2;
+    margin: 5px;
+    white-space: wrap;
+    overflow: auto;
+  }
+
   </style>
   
